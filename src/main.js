@@ -244,7 +244,7 @@ function createMenu() {
 				{ type: "separator" },
 				{
 					label: "Exit",
-					accelerator: process.platform === "darwin" ? "Cmd+Q" : "Ctrl+Q",
+					accelerator: "Ctrl+Q",
 					click: () => {
 						isQuitting = true;
 						app.quit();
@@ -310,13 +310,8 @@ app.whenReady().then(() => {
 });
 
 app.on("window-all-closed", () => {
-	// Don't quit the app on window close, keep running in tray
-	// Only quit if explicitly requested or on macOS when not in tray mode
-	if (process.platform === "darwin" && !tray) {
-		stopProxyServer();
-		app.quit();
-	}
-	// On Windows/Linux, keep running in background with tray
+	// Don't quit the app on window close, keep running in tray on Windows
+	// The app will continue running in the background with system tray
 });
 
 app.on("before-quit", (event) => {

@@ -6,9 +6,8 @@
 	"scripts": {
 		"start": "electron .",
 		"dev": "electron . --dev",
-		"build": "electron-builder --win --mac",
+		"build": "electron-builder --win",
 		"build:win": "electron-builder --win",
-		"build:mac": "electron-builder --mac",
 		"dist": "npm run build",
 		"test": "jest",
 		"postinstall": "electron-builder install-app-deps",
@@ -99,19 +98,6 @@
 			"createStartMenuShortcut": true,
 			"shortcutName": "Desktop Router",
 			"include": "build/installer.nsh"
-		},
-		"mac": {
-			"target": [
-				{
-					"target": "dmg",
-					"arch": [
-						"x64",
-						"arm64"
-					]
-				}
-			],
-			"icon": "public/icon.icns",
-			"category": "public.app-category.developer-tools"
 		},
 		"publish": {
 			"provider": "github",
