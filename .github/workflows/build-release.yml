@@ -24,9 +24,6 @@ jobs:
           - os: macos-latest
             platform: mac
             arch: universal
-          - os: ubuntu-latest
-            platform: linux
-            arch: x64
 
     steps:
       - name: Checkout Repository
@@ -159,7 +156,6 @@ jobs:
             ### Platform Downloads
             - **Windows (x64)**: `.exe` installer
             - **macOS (Universal)**: `.dmg` disk image
-            - **Linux (x64)**: `.AppImage` portable app
 
             ---
 

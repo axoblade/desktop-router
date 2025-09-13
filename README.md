@@ -67,7 +67,12 @@ To build the application for distribution:
 npm run build
 ```
 
-This will create platform-specific installers in the `dist` folder.
+This will create installers for Windows (.exe) and macOS (.dmg) in the `dist` folder.
+
+**Platform-specific builds:**
+
+- Windows: `npm run build:win`
+- macOS: `npm run build:mac`
 
 ## Usage
 
