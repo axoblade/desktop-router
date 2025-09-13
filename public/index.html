@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Desktop Router</title>
+		<link rel="stylesheet" href="styles.css" />
+	</head>
+	<body>
+		<div class="container">
+			<header>
+				<h1>🌐 Desktop Router</h1>
+				<p>HTTP Traffic Routing Service</p>
+			</header>
+
+			<main>
+				<div class="card">
+					<h2>Proxy Configuration</h2>
+
+					<form id="configForm">
+						<div class="form-group">
+							<label for="targetHost">Target Host:</label>
+							<input
+								type="text"
+								id="targetHost"
+								placeholder="localhost"
+								required
+							/>
+							<small>The destination host to route traffic to</small>
+						</div>
+
+						<div class="form-group">
+							<label for="targetPort">Target Port:</label>
+							<input
+								type="number"
+								id="targetPort"
+								placeholder="3000"
+								min="1"
+								max="65535"
+								required
+							/>
+							<small>The destination port to route traffic to</small>
+						</div>
+
+						<div class="form-group">
+							<label for="proxyPort">Proxy Port:</label>
+							<input
+								type="number"
+								id="proxyPort"
+								placeholder="8080"
+								min="1"
+								max="65535"
+								required
+							/>
+							<small>The port this proxy server will listen on</small>
+						</div>
+
+						<div class="form-actions">
+							<button type="submit" id="saveBtn" class="btn btn-primary">
+								Save & Apply
+							</button>
+							<button type="button" id="startBtn" class="btn btn-success">
+								Start Proxy
+							</button>
+							<button type="button" id="stopBtn" class="btn btn-danger">
+								Stop Proxy
+							</button>
+						</div>
+					</form>
+				</div>
+
+				<div class="card">
+					<h2>Status</h2>
+					<div class="status-grid">
+						<div class="status-item">
+							<span class="status-label">Server Status:</span>
+							<span id="serverStatus" class="status-value">Stopped</span>
+						</div>
+						<div class="status-item">
+							<span class="status-label">Proxy URL:</span>
+							<span id="proxyUrl" class="status-value">-</span>
+						</div>
+						<div class="status-item">
+							<span class="status-label">Target URL:</span>
+							<span id="targetUrl" class="status-value">-</span>
+						</div>
+					</div>
+				</div>
+
+				<div class="card">
+					<h2>How it works</h2>
+					<div class="info-section">
+						<p>
+							<strong>Traffic Routing:</strong> All requests to the proxy will
+							be forwarded to the target server.
+						</p>
+						<p><strong>Example:</strong></p>
+						<div class="example">
+							<div class="example-line">
+								<span class="example-label">Original:</span>
+								<code>http://localhost:8080/api/users</code>
+							</div>
+							<div class="example-arrow">↓ Routes to ↓</div>
+							<div class="example-line">
+								<span class="example-label">Target:</span>
+								<code>http://localhost:3000/api/users</code>
+							</div>
+						</div>
+						<p><strong>Features:</strong></p>
+						<ul>
+							<li>
+								✅ Preserves all HTTP methods (GET, POST, PUT, DELETE, etc.)
+							</li>
+							<li>✅ Forwards headers and request bodies</li>
+							<li>✅ Returns responses exactly as received</li>
+							<li>✅ CORS enabled for cross-origin requests</li>
+							<li>✅ Health check endpoint at <code>/health</code></li>
+						</ul>
+					</div>
+				</div>
+
+				<div class="card">
+					<h2>Logs</h2>
+					<div id="logs" class="logs-container">
+						<div class="log-entry">Ready to start proxy server...</div>
+					</div>
+					<button id="clearLogs" class="btn btn-secondary">Clear Logs</button>
+				</div>
+			</main>
+		</div>
+
+		<script src="renderer.js"></script>
+	</body>
+</html>

@@ -1,0 +1,14 @@
+# Icon Placeholder
+
+This file serves as a placeholder for the application icon. To create the actual icon:
+
+1. Convert the `icon.svg` file to PNG format (256x256 pixels)
+2. Name it `icon.png`
+3. Place it in the `public` folder
+
+You can use online tools like:
+- https://convertio.co/svg-png/
+- https://www.svg2png.com/
+- Or any graphics software like GIMP, Photoshop, etc.
+
+The icon should be 256x256 pixels for best results across different platforms.

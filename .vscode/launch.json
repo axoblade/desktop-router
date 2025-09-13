@@ -1,0 +1,16 @@
+{
+	"name": "Desktop Router Development",
+	"type": "node",
+	"request": "launch",
+	"program": "${workspaceFolder}/src/main.js",
+	"args": ["--dev"],
+	"console": "integratedTerminal",
+	"env": {
+		"NODE_ENV": "development"
+	},
+	"runtimeExecutable": "${workspaceFolder}/node_modules/.bin/electron",
+	"windows": {
+		"runtimeExecutable": "${workspaceFolder}/node_modules/.bin/electron.cmd"
+	},
+	"outputCapture": "std"
+}
