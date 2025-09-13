@@ -13,7 +13,9 @@
 		"build:all": "electron-builder --win --mac --linux",
 		"dist": "npm run build",
 		"test": "jest",
-		"postinstall": "electron-builder install-app-deps"
+		"postinstall": "electron-builder install-app-deps",
+		"create-icon": "node scripts/create-icon.js",
+		"prebuild": "npm run create-icon"
 	},
 	"keywords": [
 		"electron",
@@ -22,7 +24,19 @@
 		"proxy",
 		"http"
 	],
-	"author": "axoblade",
+	"author": {
+		"name": "axoblade",
+		"email": "axoblade@gmail.com",
+		"url": "https://github.com/axoblade"
+	},
+	"homepage": "https://github.com/axoblade/desktop-router",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/axoblade/desktop-router.git"
+	},
+	"bugs": {
+		"url": "https://github.com/axoblade/desktop-router/issues"
+	},
 	"license": "MIT",
 	"devDependencies": {
 		"electron": "^26.0.0",
@@ -116,8 +130,18 @@
 					]
 				}
 			],
-			"icon": "public/icon.png",
-			"category": "Development"
+			"icon": "public/",
+			"category": "Development",
+			"maintainer": "axoblade <axoblade@users.noreply.github.com>",
+			"vendor": "axoblade",
+			"description": "Desktop HTTP traffic router with Electron UI",
+			"synopsis": "Route HTTP traffic between different endpoints with a user-friendly GUI",
+			"desktop": {
+				"Name": "Desktop Router",
+				"Comment": "HTTP Traffic Router",
+				"Keywords": "http;proxy;router;network;development;",
+				"Categories": "Development;Network;System;"
+			}
 		},
 		"publish": {
 			"provider": "github",
