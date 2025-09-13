@@ -7,7 +7,13 @@
 		"start": "electron .",
 		"dev": "electron . --dev",
 		"build": "electron-builder",
-		"test": "jest"
+		"build:win": "electron-builder --win",
+		"build:mac": "electron-builder --mac",
+		"build:linux": "electron-builder --linux",
+		"build:all": "electron-builder --win --mac --linux",
+		"dist": "npm run build",
+		"test": "jest",
+		"postinstall": "electron-builder install-app-deps"
 	},
 	"keywords": [
 		"electron",
@@ -39,16 +45,84 @@
 		"files": [
 			"src/**/*",
 			"public/**/*",
-			"node_modules/**/*"
+			"node_modules/**/*",
+			"!**/node_modules/*/{CHANGELOG.md,README.md,README,readme.md,readme}",
+			"!**/node_modules/*/{test,__tests__,tests,powered-test,example,examples}",
+			"!**/node_modules/*.d.ts",
+			"!**/node_modules/.bin",
+			"!**/*.{iml,o,hprof,orig,pyc,pyo,rbc,swp,csproj,sln,xproj}",
+			"!.editorconfig",
+			"!**/._*",
+			"!**/{.DS_Store,.git,.hg,.svn,CVS,RCS,SCCS,.gitignore,.gitattributes}",
+			"!**/{__pycache__,thumbs.db,.flowconfig,.idea,.vs,.nyc_output}",
+			"!**/{appveyor.yml,.travis.yml,circle.yml}",
+			"!**/{npm-debug.log,yarn.lock,.yarn-integrity,.yarn-metadata.json}"
+		],
+		"extraResources": [
+			{
+				"from": "public/",
+				"to": "public/",
+				"filter": [
+					"**/*"
+				]
+			}
 		],
 		"win": {
-			"target": "nsis"
+			"target": [
+				{
+					"target": "nsis",
+					"arch": [
+						"x64"
+					]
+				}
+			],
+			"icon": "public/icon.ico",
+			"requestedExecutionLevel": "asInvoker"
+		},
+		"nsis": {
+			"oneClick": false,
+			"perMachine": false,
+			"allowToChangeInstallationDirectory": true,
+			"createDesktopShortcut": true,
+			"createStartMenuShortcut": true,
+			"shortcutName": "Desktop Router",
+			"include": "build/installer.nsh"
 		},
 		"mac": {
-			"target": "dmg"
+			"target": [
+				{
+					"target": "dmg",
+					"arch": [
+						"x64",
+						"arm64"
+					]
+				}
+			],
+			"icon": "public/icon.icns",
+			"category": "public.app-category.developer-tools"
 		},
 		"linux": {
-			"target": "AppImage"
+			"target": [
+				{
+					"target": "AppImage",
+					"arch": [
+						"x64"
+					]
+				},
+				{
+					"target": "deb",
+					"arch": [
+						"x64"
+					]
+				}
+			],
+			"icon": "public/icon.png",
+			"category": "Development"
+		},
+		"publish": {
+			"provider": "github",
+			"owner": "axoblade",
+			"repo": "desktop-router"
 		}
 	}
 }

@@ -106,7 +106,7 @@ When the proxy is running, it provides:
 		"target": "http://localhost:3000",
 		"listening": 3200
 	},
-	"timestamp": "2025-09-13T10:30:00.000Z"
+	"timestamp": "2025-09-13T10:40:00.000Z"
 }
 ```
 

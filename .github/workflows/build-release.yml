@@ -1,0 +1,171 @@
+name: Build and Release Desktop Router
+
+on:
+  push:
+    branches: [main]
+    tags: ["v*"]
+  pull_request:
+    branches: [main]
+
+env:
+  NODE_VERSION: "18"
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            platform: win
+            arch: x64
+          - os: macos-latest
+            platform: mac
+            arch: universal
+          - os: ubuntu-latest
+            platform: linux
+            arch: x64
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: "npm"
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Build Application
+        run: npm run build:${{ matrix.platform }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: List Build Output (Debug)
+        run: |
+          echo "Build output:"
+          ls -la dist/ || dir dist\
+        shell: bash
+
+      - name: Upload Build Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: desktop-router-${{ matrix.platform }}-${{ matrix.arch }}
+          path: dist/*
+          retention-days: 30
+          if-no-files-found: error
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: "npm"
+
+      - name: Download All Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts/
+
+      - name: List Downloaded Artifacts (Debug)
+        run: |
+          echo "Downloaded artifacts:"
+          find artifacts/ -type f -name "*" || true
+
+      - name: Get Package Version
+        id: package-version
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "tag=v$VERSION" >> $GITHUB_OUTPUT
+          echo "Package version: $VERSION"
+
+      - name: Check if Tag Exists
+        id: check-tag
+        run: |
+          TAG="v${{ steps.package-version.outputs.version }}"
+          if git rev-parse "$TAG" >/dev/null 2>&1; then
+            echo "exists=true" >> $GITHUB_OUTPUT
+            echo "Tag $TAG already exists, skipping release creation"
+          else
+            echo "exists=false" >> $GITHUB_OUTPUT
+            echo "Tag $TAG does not exist, will create release"
+          fi
+
+      - name: Generate Changelog
+        id: changelog
+        if: steps.check-tag.outputs.exists == 'false'
+        run: |
+          LAST_TAG=$(git describe --tags --abbrev=0 HEAD^ 2>/dev/null || echo "")
+          if [ -n "$LAST_TAG" ]; then
+            CHANGELOG=$(git log --pretty=format:"- %s (%h)" $LAST_TAG..HEAD)
+          else
+            CHANGELOG=$(git log --pretty=format:"- %s (%h)" HEAD)
+          fi
+          echo "changelog<<EOF" >> $GITHUB_OUTPUT
+          echo "$CHANGELOG" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Create Release
+        if: steps.check-tag.outputs.exists == 'false'
+        id: create_release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ steps.package-version.outputs.tag }}
+          name: Desktop Router v${{ steps.package-version.outputs.version }}
+          body: |
+            ## Desktop Router v${{ steps.package-version.outputs.version }}
+
+            ### What's New
+            ${{ steps.changelog.outputs.changelog }}
+
+            ### Features
+            - 🌐 HTTP Traffic Routing with Express proxy server
+            - 🎛️ User-friendly Electron GUI for configuration
+            - 💾 Persistent configuration storage
+            - 📊 Real-time status monitoring and logging
+            - 🔄 System tray integration (minimize to tray)
+            - 🔀 Support for all HTTP methods and headers
+            - ❤️ Health check endpoint at `/health`
+            - 🌍 CORS support for cross-origin requests
+
+            ### Installation
+            1. Download the appropriate installer for your platform below
+            2. Run the installer
+            3. Launch Desktop Router
+            4. Configure your routing settings in the GUI
+            5. Start the proxy server
+
+            ### Usage
+            Route traffic from `http://localhost:proxyPort/endpoint` to `http://targetHost:targetPort/endpoint`
+
+            ### Platform Downloads
+            - **Windows (x64)**: `.exe` installer
+            - **macOS (Universal)**: `.dmg` disk image
+            - **Linux (x64)**: `.AppImage` portable app
+
+            ---
+
+            **Note**: This release was automatically built and published via GitHub Actions.
+          draft: false
+          prerelease: false
+          files: |
+            artifacts/**/*
+          token: ${{ secrets.GITHUB_TOKEN }}
